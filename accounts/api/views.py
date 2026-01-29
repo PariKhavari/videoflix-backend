@@ -8,15 +8,16 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from ..models import User
-from .serializers import LoginSerializer, RegisterSerializer, UserPublicSerializer
-from ..utils import (
+from accounts.models import User
+from accounts.api.serializers import LoginSerializer, RegisterSerializer
+from accounts.utils import (
     build_frontend_activation_link,
     clear_auth_cookies,
     create_activation_token,
     create_uidb64,
     make_refresh_token,
     send_activation_email,
+    set_access_cookie,
     set_auth_cookies,
 )
 
@@ -48,10 +49,8 @@ class ActivateView(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request, uidb64: str, token: str):
-        try:
-            user_id = force_str(urlsafe_base64_decode(uidb64))
-            user = User.objects.get(pk=user_id)
-        except (User.DoesNotExist, ValueError, TypeError):
+        user = self._get_user(uidb64)
+        if not user:
             return Response({"message": "Aktivierung fehlgeschlagen."}, status=400)
 
         if not default_token_generator.check_token(user, token):
@@ -60,6 +59,14 @@ class ActivateView(APIView):
         user.is_active = True
         user.save(update_fields=["is_active"])
         return Response({"message": "Konto erfolgreich aktiviert."}, status=200)
+
+    def _get_user(self, uidb64: str):
+        """Decode uidb64 and return user or None."""
+        try:
+            user_id = force_str(urlsafe_base64_decode(uidb64))
+            return User.objects.get(pk=user_id)
+        except (User.DoesNotExist, ValueError, TypeError):
+            return None
 
 
 class LoginView(APIView):
@@ -91,10 +98,7 @@ class LogoutView(APIView):
         if not raw_refresh:
             return Response({"detail": "Refresh-Token fehlt."}, status=400)
 
-        try:
-            token = RefreshToken(raw_refresh)
-            token.blacklist()
-        except TokenError:
+        if not self._blacklist_refresh(raw_refresh):
             return Response({"detail": "Refresh-Token fehlt."}, status=400)
 
         response = Response(
@@ -103,3 +107,38 @@ class LogoutView(APIView):
         )
         clear_auth_cookies(response)
         return response
+
+    def _blacklist_refresh(self, raw_refresh: str) -> bool:
+        """Blacklist refresh token. Returns True on success."""
+        try:
+            token = RefreshToken(raw_refresh)
+            token.blacklist()
+            return True
+        except TokenError:
+            return False
+
+
+class TokenRefreshView(APIView):
+    """POST /api/token/refresh/"""
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        raw_refresh = request.COOKIES.get("refresh_token")
+        if not raw_refresh:
+            return Response({"detail": "Refresh-Token fehlt."}, status=400)
+
+        access_token = self._create_access_token(raw_refresh)
+        if not access_token:
+            return Response({"detail": "Ungültiger Refresh-Token."}, status=401)
+
+        response = Response({"detail": "Token aktualisiert", "access": access_token}, status=200)
+        set_access_cookie(response, access_token)
+        return response
+
+    def _create_access_token(self, raw_refresh: str) -> str | None:
+        """Return a new access token string or None."""
+        try:
+            refresh = RefreshToken(raw_refresh)
+            return str(refresh.access_token)
+        except TokenError:
+            return None

@@ -40,28 +40,39 @@ def make_refresh_token(user) -> RefreshToken:
     return RefreshToken.for_user(user)
 
 
+def _cookie_common_kwargs() -> dict:
+    """Return common cookie settings."""
+    return {
+        "httponly": True,
+        "secure": getattr(settings, "AUTH_COOKIE_SECURE", False),
+        "samesite": getattr(settings, "AUTH_COOKIE_SAMESITE", "Lax"),
+        "path": "/",
+    }
+
+
 def set_auth_cookies(response: Response, refresh: RefreshToken) -> None:
     """Set HttpOnly cookies for access and refresh tokens."""
-    secure = getattr(settings, "AUTH_COOKIE_SECURE", False)
-    samesite = getattr(settings, "AUTH_COOKIE_SAMESITE", "Lax")
-
     response.set_cookie(
         "access_token",
         str(refresh.access_token),
-        httponly=True,
-        secure=secure,
-        samesite=samesite,
-        path="/",
         max_age=int(getattr(settings, "ACCESS_COOKIE_MAX_AGE", 60 * 5)),
+        **_cookie_common_kwargs(),
     )
     response.set_cookie(
         "refresh_token",
         str(refresh),
-        httponly=True,
-        secure=secure,
-        samesite=samesite,
-        path="/",
         max_age=int(getattr(settings, "REFRESH_COOKIE_MAX_AGE", 60 * 60 * 24 * 7)),
+        **_cookie_common_kwargs(),
+    )
+
+
+def set_access_cookie(response: Response, access_token: str) -> None:
+    """Set only the access token cookie."""
+    response.set_cookie(
+        "access_token",
+        access_token,
+        max_age=int(getattr(settings, "ACCESS_COOKIE_MAX_AGE", 60 * 5)),
+        **_cookie_common_kwargs(),
     )
 
 
