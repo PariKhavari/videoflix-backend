@@ -20,16 +20,34 @@ def create_uidb64(user) -> str:
     return urlsafe_base64_encode(force_bytes(user.pk))
 
 
+def _frontend_base_url() -> str:
+    """Return frontend base URL."""
+    return getattr(settings, "FRONTEND_BASE_URL", "http://localhost:4200").rstrip("/")
+
+
 def build_frontend_activation_link(uidb64: str, token: str) -> str:
     """Build activation link pointing to the frontend."""
-    base = getattr(settings, "FRONTEND_BASE_URL", "http://localhost:4200").rstrip("/")
-    return f"{base}/activate/{uidb64}/{token}"
+    return f"{_frontend_base_url()}/activate/{uidb64}/{token}"
+
+
+def build_frontend_password_reset_link(uidb64: str, token: str) -> str:
+    """Build password reset link pointing to the frontend."""
+    return f"{_frontend_base_url()}/password-reset/{uidb64}/{token}"
 
 
 def send_activation_email(to_email: str, activation_link: str) -> None:
     """Send activation email with a frontend link."""
     subject = "Activate your Videoflix account"
     html = render_to_string("accounts/activation_email.html", {"activation_link": activation_link})
+    msg = EmailMultiAlternatives(subject=subject, to=[to_email])
+    msg.attach_alternative(html, "text/html")
+    msg.send(fail_silently=False)
+
+
+def send_password_reset_email(to_email: str, reset_link: str) -> None:
+    """Send password reset email with a frontend link."""
+    subject = "Reset your Videoflix password"
+    html = render_to_string("accounts/password_reset_email.html", {"reset_link": reset_link})
     msg = EmailMultiAlternatives(subject=subject, to=[to_email])
     msg.attach_alternative(html, "text/html")
     msg.send(fail_silently=False)
