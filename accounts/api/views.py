@@ -44,13 +44,23 @@ class RegisterView(APIView):
             {"user": {"id": user.id, "email": user.email}, "token": token},
             status=status.HTTP_201_CREATED,
         )
-
+ 
 
 class ActivateView(APIView):
-    """GET /api/activate/<uidb64>/<token>/"""
+    """
+    Activate user account.
+
+    Supports both:
+    - /api/activate/<uidb64>/<token>/
+    - /api/activate/?uid=<uidb64>&token=<token>
+    """
     permission_classes = [AllowAny]
 
-    def get(self, request, uidb64: str, token: str):
+    def get(self, request, uidb64: str | None = None, token: str | None = None):
+        uidb64, token = self._resolve_params(request, uidb64, token)
+        if not uidb64 or not token:
+            return Response({"message": "Aktivierung fehlgeschlagen."}, status=400)
+
         user = self._get_user(uidb64)
         if not user:
             return Response({"message": "Aktivierung fehlgeschlagen."}, status=400)
@@ -61,6 +71,14 @@ class ActivateView(APIView):
         user.is_active = True
         user.save(update_fields=["is_active"])
         return Response({"message": "Konto erfolgreich aktiviert."}, status=200)
+
+    def _resolve_params(self, request, uidb64: str | None, token: str | None) -> tuple[str | None, str | None]:
+        """Resolve uid/token from path params first, then query params."""
+        if uidb64 and token:
+            return uidb64, token
+        q_uid = (request.query_params.get("uid") or "").strip()
+        q_token = (request.query_params.get("token") or "").strip()
+        return (q_uid or None), (q_token or None)
 
     def _get_user(self, uidb64: str):
         """Decode uidb64 and return user or None."""
