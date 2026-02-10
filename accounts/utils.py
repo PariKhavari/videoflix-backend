@@ -37,9 +37,9 @@ def build_frontend_activation_link(uidb64: str, token: str) -> str:
 
 
 def build_frontend_password_reset_link(uidb64: str, token: str) -> str:
-    """Build password reset link pointing to the frontend."""
-    base = _frontend_base_url()
-    return f"{base}/pages/auth/password_reset.html?uid={uidb64}&token={token}"
+    """Build password reset link pointing to the mentor frontend confirm password page."""
+    base = getattr(settings, "FRONTEND_BASE_URL", "http://localhost:5500").rstrip("/")
+    return f"{base}/pages/auth/confirm_password.html?uid={uidb64}&token={token}"
 
 
 def send_activation_email(to_email: str, activation_link: str) -> None:
