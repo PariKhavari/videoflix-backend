@@ -59,14 +59,22 @@ def send_activation_email(to_email: str, activation_link: str) -> None:
         html_message=html_message,
     )
 
+def  send_password_reset_email(to_email: str, reset_link: str) -> None:
+    """Send reset_password email using Django's send_mail()."""
+    subject = "reset your password account"
+    html_message = render_to_string(
+        "accounts/password_reset.html",
+        {"reset_link": reset_link},
+    )
 
-def send_password_reset_email(to_email: str, reset_link: str) -> None:
-    """Send password reset email with a frontend link."""
-    subject = "Reset your Videoflix password"
-    html = render_to_string("accounts/password_reset_email.html", {"reset_link": reset_link})
-    msg = EmailMultiAlternatives(subject=subject, to=[to_email])
-    msg.attach_alternative(html, "text/html")
-    msg.send(fail_silently=False)
+    send_mail(
+        subject=subject,
+        message="", 
+        from_email=getattr(settings, "DEFAULT_FROM_EMAIL", None),
+        recipient_list=[to_email],
+        fail_silently=False,
+        html_message=html_message,
+    )
 
 
 def make_refresh_token(user) -> RefreshToken:
