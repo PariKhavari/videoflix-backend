@@ -1,7 +1,6 @@
 from __future__ import annotations
 from django.conf import settings
 from django.contrib.auth.tokens import default_token_generator
-from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
@@ -48,15 +47,15 @@ def send_activation_email(to_email: str, activation_link: str) -> None:
     html_message = render_to_string(
         "accounts/activation_email.html",
         {"activation_link": activation_link},
-    )
+)
 
     send_mail(
         subject=subject,
-        message="", 
-        from_email=getattr(settings, "DEFAULT_FROM_EMAIL", None),
+        message="",
+        from_email=settings.DEFAULT_FROM_EMAIL,
         recipient_list=[to_email],
-        fail_silently=False,
         html_message=html_message,
+        fail_silently=False,
     )
 
 def  send_password_reset_email(to_email: str, reset_link: str) -> None:
@@ -65,15 +64,15 @@ def  send_password_reset_email(to_email: str, reset_link: str) -> None:
     html_message = render_to_string(
         "accounts/password_reset.html",
         {"reset_link": reset_link},
-    )
+)
 
     send_mail(
         subject=subject,
-        message="", 
-        from_email=getattr(settings, "DEFAULT_FROM_EMAIL", None),
+        message="",
+        from_email=settings.DEFAULT_FROM_EMAIL,
         recipient_list=[to_email],
-        fail_silently=False,
         html_message=html_message,
+        fail_silently=False,
     )
 
 

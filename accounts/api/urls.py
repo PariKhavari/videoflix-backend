@@ -7,7 +7,6 @@ from accounts.api.views import (
     TokenRefreshView,
     PasswordResetView,
     PasswordConfirmView,
-   
 )
 
 urlpatterns = [
