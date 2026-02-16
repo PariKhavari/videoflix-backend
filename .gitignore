@@ -1,6 +1,9 @@
 # Erstellt von https://www.toptal.com/developers/gitignore/api/windows,django,python
 # Bearbeiten unter https://www.toptal.com/developers/gitignore?templates=windows,django,python
 
+# Media files (uploads, HLS, thumbnails)
+media/
+
 ### Django ###
 *.Protokoll
 *.Pot

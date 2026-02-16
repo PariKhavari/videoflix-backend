@@ -29,7 +29,6 @@ def _ensure_movie_exists(movie_id: int) -> None:
 def _safe_segment_name(segment: str) -> str:
     """
     Prevent path traversal and only allow plain filenames.
-
     - Disallow slashes/backslashes
     - Disallow '..'
     - Keep only basename behavior
@@ -64,7 +63,6 @@ class HlsIndexView(APIView):
         if not manifest_path.exists():
             raise Http404("Manifest not found.")
 
-        # Content-Type required by the documentation.
         return FileResponse(
             open(manifest_path, "rb"),
             content_type="application/vnd.apple.mpegurl",
@@ -82,7 +80,6 @@ class HlsSegmentView(APIView):
         base_dir = _get_hls_base_dir(movie_id, resolution)
         safe_name = _safe_segment_name(segment)
 
-        # Optional: restrict to .ts segments only
         if not safe_name.lower().endswith(".ts"):
             raise Http404("Segment not found.")
 
@@ -90,7 +87,6 @@ class HlsSegmentView(APIView):
         if not segment_path.exists():
             raise Http404("Segment not found.")
 
-        # Content-Type required by the documentation.
         return FileResponse(
             open(segment_path, "rb"),
             content_type="video/MP2T",
