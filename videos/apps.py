@@ -5,6 +5,6 @@ class VideosConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
     name = "videos"
 
-    def ready(self) -> None:
+    def ready(self):
        
-        from . import signals 
+        import videos.signals
