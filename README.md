@@ -90,8 +90,6 @@ http://127.0.0.1:8000/
 Django Admin:
 http://127.0.0.1:8000/admin/
 
-Django RQ Dashboard:
-http://127.0.0.1:8000/django-rq/
 
 ---
 
@@ -161,8 +159,3 @@ Multiple workers can be started for parallel video processing.
 - FFmpeg must be installed in the Docker image
 - Redis is required for background jobs
 
----
-
-## License
-
-This project was created for educational purposes.
