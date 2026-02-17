@@ -142,13 +142,29 @@ JWT authentication required.
 
 ---
 
-## Worker Setup
+## Background Worker Architecture ⚙️
 
-Worker runs as a separate Docker service:
+Video processing is handled by Django RQ workers started inside the main web container.
 
-docker-compose up worker
+In backend.entrypoint.sh, multiple workers are started:
 
-Multiple workers can be started for parallel video processing.
+python manage.py rqworker default &
+python manage.py rqworker default &
+python manage.py rqworker default &
+
+
+This creates three parallel RQ workers within the same container.
+
+Why multiple workers?
+
+Each video conversion (480p / 720p / 1080p) is enqueued as a separate job.
+Running multiple workers allows:
+
+Parallel resolution processing
+
+Faster total conversion time
+
+Reduced blocking risk
 
 ---
 
