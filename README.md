@@ -148,9 +148,9 @@ Video processing is handled by Django RQ workers started inside the main web con
 
 In backend.entrypoint.sh, multiple workers are started:
 
-python manage.py rqworker default &
-python manage.py rqworker default &
-python manage.py rqworker default &
+-python manage.py rqworker default &
+-python manage.py rqworker default &
+-python manage.py rqworker default &
 
 
 This creates three parallel RQ workers within the same container.
