@@ -34,26 +34,50 @@ A Django REST Framework backend for a video streaming platform with HLS support,
 
 ## Project Structure
 
-videos/
-- models.py
-- signals.py
-- tasks.py
-- api/
-  - serializers.py
-  - views.py
-  - urls.py
-
-media/
-- videos/
-- thumbnail/
-- hls/
-
+```text
+videoflix-backend/
+│
+├── accounts/
+│   ├── models.py
+│   ├── views.py
+│   ├── serializers.py
+│   └── api/
+│
+├── videos/
+│   ├── models.py
+│   ├── signals.py
+│   ├── tasks.py
+│   └── api/
+│       ├── views.py
+│       ├── serializers.py
+│       └── urls.py
+│
+├── core/
+│   ├── settings.py
+│   ├── urls.py
+│   └── wsgi.py
+│
+├── media/
+│   ├── videos/
+│   ├── thumbnail/
+│   └── hls/
+│       └── <video_id>/
+│           ├── 480p/
+│           ├── 720p/
+│           └── 1080p/
+│
+├── backend.entrypoint.sh
+├── docker-compose.yml
+├── manage.py
+├── requirements.txt
+└── README.md
+```
 ---
 
 ## Environment Configuration ⚙️
 
 Create a `.env` file in the project root with the following variables:
-
+```env
 DB_NAME=videoflix
 DB_USER=postgres
 DB_PASSWORD=postgres
@@ -69,11 +93,11 @@ DJANGO_SUPERUSER_PASSWORD=adminpassword
 
 EMAIL_HOST=smtp.gmail.com
 EMAIL_PORT=587
-EMAIL_HOST_USER=your-email@gmail.com
+EMAIL_HOST_USER=your-email@example.com
 EMAIL_HOST_PASSWORD=your-app-password
 EMAIL_USE_TLS=True
-DEFAULT_FROM_EMAIL=Videoflix <your-email@gmail.com>
-
+DEFAULT_FROM_EMAIL=Videoflix <your-email@example.com>
+```
 ---
 
 ## Running the Project
@@ -148,10 +172,11 @@ Video processing is handled by Django RQ workers started inside the main web con
 
 In backend.entrypoint.sh, multiple workers are started:
 
--python manage.py rqworker default &
--python manage.py rqworker default &
--python manage.py rqworker default &
-
+```bash
+python manage.py rqworker default &
+python manage.py rqworker default &
+python manage.py rqworker default &
+```
 
 This creates three parallel RQ workers within the same container.
 
