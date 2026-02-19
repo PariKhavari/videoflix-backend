@@ -76,7 +76,8 @@ videoflix-backend/
 
 ## Environment Configuration ⚙️
 
-Create a `.env` file in the project root with the following variables:
+Create a `.env` file in the project root with the following variables or copy the `.env.template`:
+
 ```env
 DB_NAME=videoflix
 DB_USER=postgres
