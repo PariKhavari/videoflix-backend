@@ -1,6 +1,3 @@
-# Erstellt von https://www.toptal.com/developers/gitignore/api/windows,django,python
-# Bearbeiten unter https://www.toptal.com/developers/gitignore?templates=windows,django,python
-
 # Media files (uploads, HLS, thumbnails)
 media/
 
@@ -15,10 +12,6 @@ local_settings.py
 db.sqlite3
 db.sqlite3-journal
 Medien
-
-# Wenn Ihr Build-Prozess die Ausführung von collectstatic beinhaltet, dann benötigen oder möchten Sie wahrscheinlich keine staticfiles/ einbinden.
-# in Ihrem Git-Repository. Aktualisieren Sie die folgende Zeile entsprechend und entfernen Sie die Kommentarzeichen.
-# <django-project-name>/staticfiles/
 
 ### Django.Python Stack ###
 # Byte-kompilierte / optimierte / DLL-Dateien
@@ -99,18 +92,6 @@ Ziel/
 profile_default/
 ipython_config.py
 
-# pyenv
-# Bei einer Bibliothek oder einem Paket können Sie diese Dateien ignorieren, da der Code
-# Soll in mehreren Umgebungen ausgeführt werden; andernfalls bitte einchecken:
-# .python-version
-
-# pipenv
-# Gemäß pypa/pipenv#598 wird empfohlen, Pipfile.lock in die Versionskontrolle aufzunehmen.
-# Im Falle einer Zusammenarbeit, wenn plattformspezifische Abhängigkeiten oder Abhängigkeiten bestehen
-Da pipenv keine plattformübergreifende Unterstützung bietet, kann es vorkommen, dass Abhängigkeiten installiert werden, die nicht funktionieren oder nicht
-# Alle benötigten Abhängigkeiten installieren.
-#Pipfile.lock
-
 #Poesie
 # Ähnlich wie bei Pipfile.lock wird generell empfohlen, poetry.lock in die Versionskontrolle aufzunehmen.
 Dies wird insbesondere für Binärpakete empfohlen, um die Reproduzierbarkeit zu gewährleisten, und ist mehr
@@ -170,48 +151,6 @@ dmypy.json
 # Cython-Debug-Symbole
 cython_debug/
 
-# PyCharm
-# Die JetBrains-spezifische Vorlage wird in einer separaten JetBrains.gitignore-Datei verwaltet, die
-# zu finden unter https://github.com/github/gitignore/blob/main/Global/JetBrains.gitignore
-# und kann zur globalen .gitignore-Datei hinzugefügt oder in diese Datei integriert werden. Für eine radikalere Lösung.
-# Option (nicht empfohlen) Sie können die folgende Zeile einkommentieren, um den gesamten Ideenordner zu ignorieren.
-#.Idee/
-
-### Python ###
-# Byte-kompilierte / optimierte / DLL-Dateien
-
-# C-Erweiterungen
-
-# Vertrieb / Verpackung
-
-# PyInstaller
-# Normalerweise werden diese Dateien von einem Python-Skript anhand einer Vorlage geschrieben.
-# bevor PyInstaller die EXE-Datei erstellt, um Datums- und andere Informationen einzufügen.
-
-# Installationsprotokolle
-
-# Unit-Test-/Abdeckungsberichte
-
-# Übersetzungen
-
-# Django-Zeugs:
-
-# Flaschenzeug:
-
-# Scrapy-Zeug:
-
-# Sphinx-Dokumentation
-
-# PyBuilder
-
-# Jupyter Notebook
-
-# IPython
-
-# pyenv
-# Bei einer Bibliothek oder einem Paket können Sie diese Dateien ignorieren, da der Code
-# Soll in mehreren Umgebungen ausgeführt werden; andernfalls bitte einchecken:
-# .python-version
 
 # pipenv
 # Gemäß pypa/pipenv#598 wird empfohlen, Pipfile.lock in die Versionskontrolle aufzunehmen.
@@ -225,39 +164,6 @@ Dies wird insbesondere für Binärpakete empfohlen, um die Reproduzierbarkeit zu
 # wird bei Bibliotheken häufig ignoriert.
 # https://python-poetry.org/docs/basic-usage/#commit-your-poetrylock-file-to-version-control
 
-# pdm
-# Ähnlich wie bei Pipfile.lock wird generell empfohlen, pdm.lock in die Versionskontrolle aufzunehmen.
-# pdm speichert projektweite Konfigurationen in .pdm.toml, es wird jedoch empfohlen, diese Datei nicht einzuschließen.
-# in der Versionskontrolle.
-# https://pdm.fming.dev/#use-with-ide
-
-# PEP 582; verwendet z. B. von github.com/David-OConnor/pyflow und github.com/pdm-project/pdm
-
-# Sellerie-Sachen
-
-# SageMath-geparste Dateien
-
-# Umgebungen
-
-# Spyder-Projekteinstellungen
-
-# Einstellungen für Seilprojekte
-
-# mkdocs-Dokumentation
-
-# mypy
-
-# Pyre-Typenprüfung
-
-# pytype statischer Typanalysator
-
-# Cython-Debug-Symbole
-
-# PyCharm
-# Die JetBrains-spezifische Vorlage wird in einer separaten JetBrains.gitignore-Datei verwaltet, die
-# zu finden unter https://github.com/github/gitignore/blob/main/Global/JetBrains.gitignore
-# und kann zur globalen .gitignore-Datei hinzugefügt oder in diese Datei integriert werden. Für eine radikalere Lösung.
-# Option (nicht empfohlen) Sie können die folgende Zeile einkommentieren, um den gesamten Ideenordner zu ignorieren.
 
 ### Python-Patch ###
 # Lokale Konfigurationsdatei für Poetry - https://python-poetry.org/docs/configuration/#local-configuration
@@ -294,5 +200,3 @@ $RECYCLE.BIN/
 
 # Windows-Verknüpfungen
 *.lnk
-
-# Ende von https://www.toptal.com/developers/gitignore/api/windows,django,python
