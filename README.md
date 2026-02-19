@@ -190,7 +190,7 @@ Parallel resolution processing
 
 Faster total conversion time
 
-Reduced blocking risk
+Reduced blocking risk 
 
 ---
 
@@ -200,4 +200,3 @@ Reduced blocking risk
 - Static files are collected automatically on container start
 - FFmpeg must be installed in the Docker image
 - Redis is required for background jobs
-
