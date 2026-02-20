@@ -25,13 +25,14 @@ from accounts.utils import (
 
 
 class RegisterView(APIView):
-    """POST /api/register/"""
+    """Handle user registration and send account activation email."""
     permission_classes = [AllowAny]
 
     def post(self, request):
+        """Create a new inactive user and send an activation link via email."""
         serializer = RegisterSerializer(data=request.data)
         if not serializer.is_valid():
-            return Response({"detail": "Bitte überprüfe deine Eingaben und versuche es erneut."}, status=400)
+            return Response({"detail": "Please check your input and try again."}, status=400)
 
         user = serializer.save()
         uidb64 = create_uidb64(user)
@@ -47,30 +48,28 @@ class RegisterView(APIView):
  
 
 class ActivateView(APIView):
-    """
-    Activate user account.
-
-    Supports both:
-    - /api/activate/<uidb64>/<token>/
-    - /api/activate/?uid=<uidb64>&token=<token>
-    """
+    """Activate a user account using uid and token from email."""
     permission_classes = [AllowAny]
 
     def get(self, request, uidb64: str | None = None, token: str | None = None):
+        """Validate activation token and activate the user account."""
         uidb64, token = self._resolve_params(request, uidb64, token)
         if not uidb64 or not token:
-            return Response({"message": "Aktivierung fehlgeschlagen."}, status=400)
+            return Response({"detail": "The activation link is invalid or has expired."}
+, status=400)
 
         user = self._get_user(uidb64)
         if not user:
-            return Response({"message": "Aktivierung fehlgeschlagen."}, status=400)
+            return Response({"detail": "The activation link is invalid or has expired."}
+, status=400)
 
         if not default_token_generator.check_token(user, token):
-            return Response({"message": "Aktivierung fehlgeschlagen."}, status=400)
+            return Response({"detail": "The activation link is invalid or has expired."}
+, status=400)
 
         user.is_active = True
         user.save(update_fields=["is_active"])
-        return Response({"message": "Konto erfolgreich aktiviert."}, status=200)
+        return Response({"detail": "Account successfully activated."}, status=200)
 
     def _resolve_params(self, request, uidb64: str | None, token: str | None) -> tuple[str | None, str | None]:
         """Resolve uid/token from path params first, then query params."""
@@ -90,19 +89,20 @@ class ActivateView(APIView):
 
 
 class LoginView(APIView):
-    """POST /api/login/"""
+    """Authenticate user and issue JWT tokens as HttpOnly cookies."""
     permission_classes = [AllowAny]
 
     def post(self, request):
+        """Validate credentials and set access and refresh tokens in cookies."""
         serializer = LoginSerializer(data=request.data)
         if not serializer.is_valid():
-            return Response({"detail": "Bitte überprüfe deine Eingaben und versuche es erneut."}, status=401)
+            return Response({"detail": "Please check your input and try again."}, status=401)
 
         user = serializer.validated_data["user"]
         refresh = make_refresh_token(user)
 
         response = Response(
-            {"detail": "Login erfolgreich", "user": {"id": user.id, "username": user.username}},
+            {"detail": "Invalid credentials.", "user": {"id": user.id, "username": user.username}},
             status=200,
         )
         set_auth_cookies(response, refresh)
@@ -110,19 +110,20 @@ class LoginView(APIView):
 
 
 class LogoutView(APIView):
-    """POST /api/logout/"""
+    """Logout user and invalidate refresh token."""
     permission_classes = [AllowAny]
 
-    def post(self, request):
+    def post(self, request):   
+        """Blacklist refresh token and delete authentication cookies."""
         raw_refresh = request.COOKIES.get("refresh_token")
         if not raw_refresh:
-            return Response({"detail": "Refresh-Token fehlt."}, status=400)
+            return Response({"detail": "Refresh-Token failed."}, status=400)
 
         if not self._blacklist_refresh(raw_refresh):
-            return Response({"detail": "Refresh-Token fehlt."}, status=400)
+            return Response({"detail": "Refresh-Token failed."}, status=400)
 
         response = Response(
-            {"detail": "Abmeldung erfolgreich! Alle Tokens werden gelöscht. Das Aktualisierungstoken ist jetzt ungültig."},
+            {"detail": "Logout completed. All tokens have been cleared."},
             status=200,
         )
         clear_auth_cookies(response)
@@ -139,19 +140,20 @@ class LogoutView(APIView):
 
 
 class TokenRefreshView(APIView):
-    """POST /api/token/refresh/"""
+    """Refresh expired access token using valid refresh token."""
     permission_classes = [AllowAny]
 
     def post(self, request):
+        """Generate a new access token and update HttpOnly cookie."""
         raw_refresh = request.COOKIES.get("refresh_token")
         if not raw_refresh:
-            return Response({"detail": "Refresh-Token fehlt."}, status=400)
+            return Response({"detail": "Refresh-Token failed."}, status=400)
 
         access_token = self._create_access_token(raw_refresh)
         if not access_token:
-            return Response({"detail": "Ungültiger Refresh-Token."}, status=401)
+            return Response({"detail": "invalid Refresh-Token."}, status=401)
 
-        response = Response({"detail": "Token aktualisiert", "access": access_token}, status=200)
+        response = Response({"detail": "Token updated", "access": access_token}, status=200)
         set_access_cookie(response, access_token)
         return response
 
@@ -165,10 +167,11 @@ class TokenRefreshView(APIView):
 
 
 class PasswordResetView(APIView):
-    """POST /api/password_reset/"""
+    """Send password reset email to user if account exists."""
     permission_classes = [AllowAny]
 
     def post(self, request):
+        """Validate token and set new password for the user."""
         email = self._get_email(request.data)
         user = self._get_active_user_by_email(email)
         if user:
@@ -205,18 +208,18 @@ class PasswordConfirmView(APIView):
     def post(self, request, uidb64: str, token: str):
         user = self._get_user(uidb64)
         if not user:
-            return Response({"detail": "Aktivierung fehlgeschlagen."}, status=400)
+            return Response({"detail": "The activation link is invalid or has expired."}, status=400)
 
         if not default_token_generator.check_token(user, token):
-            return Response({"detail": "Aktivierung fehlgeschlagen."}, status=400)
+            return Response({"detail": "The activation link is invalid or has expired."}, status=400)
 
         password = self._get_new_password(request.data)
         if not password:
-            return Response({"detail": "Bitte überprüfe deine Eingaben und versuche es erneut."}, status=400)
+            return Response({"detail": "Please check your input and try again."}, status=400)
 
         user.set_password(password)
         user.save(update_fields=["password"])
-        return Response({"detail": "Ihr Passwort wurde erfolgreich zurückgesetzt."}, status=200)
+        return Response({"detail": "Your password has been successfully reset."}, status=200)
 
     def _get_user(self, uidb64: str):
         """Decode uidb64 and return user or None."""

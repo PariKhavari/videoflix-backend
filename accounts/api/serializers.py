@@ -13,10 +13,10 @@ class RegisterSerializer(serializers.Serializer):
     def validate(self, attrs):
         if attrs["password"] != attrs["confirmed_password"]:
             raise serializers.ValidationError(
-                "Bitte überprüfe deine Eingaben und versuche es erneut.")
+                "Please check your input and try again.")
         if User.objects.filter(email__iexact=attrs["email"]).exists():
             raise serializers.ValidationError(
-                "Bitte überprüfe deine Eingaben und versuche es erneut.")
+                "Please check your input and try again.")
         return attrs
 
     def create(self, validated_data):
@@ -41,12 +41,12 @@ class LoginSerializer(serializers.Serializer):
             user = User.objects.get(email__iexact=email)
         except User.DoesNotExist:
             raise serializers.ValidationError(
-                "Bitte überprüfe deine Eingaben und versuche es erneut.")
+                "Please check your input and try again.")
 
         user = authenticate(username=user.username, password=attrs["password"])
         if not user or not user.is_active:
             raise serializers.ValidationError(
-                "Bitte überprüfe deine Eingaben und versuche es erneut.")
+                "Please check your input and try again.")
 
         attrs["user"] = user
         return attrs

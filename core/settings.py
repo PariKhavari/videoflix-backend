@@ -33,19 +33,21 @@ DEBUG = True
 ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", default="localhost").split(",")
 CSRF_TRUSTED_ORIGINS = os.environ.get(
-    "CSRF_TRUSTED_ORIGINS", default="http://localhost:4200").split(",")
+    "CSRF_TRUSTED_ORIGINS", default="http://127.0.0.1:5500").split(",")
 
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = os.environ.get(
-    "CSRF_TRUSTED_ORIGINS", default="http://localhost:4200").split(",")
+    "CSRF_TRUSTED_ORIGINS", default="http://127.0.0.1:5500").split(",")
 
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:5500",
+    "http://127.0.0.1:5500",
 
 ]
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5500",
+    "http://127.0.0.1:5500",
 
 ]
 
@@ -172,7 +174,7 @@ AUTH_USER_MODEL = "accounts.User"
 # - In local dev (http), AUTH_COOKIE_SECURE must be False.
 # - SameSite=Lax works if you keep host consistent (localhost everywhere).
 AUTH_COOKIE_SECURE = False
-AUTH_COOKIE_SAMESITE = "None"
+AUTH_COOKIE_SAMESITE = "Lax"
 ACCESS_COOKIE_MAX_AGE = 60 * 5
 REFRESH_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
 
